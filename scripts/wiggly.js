@@ -77,7 +77,6 @@ function setup() {
 				let angleRad = ((i / c.vertexCount) * 360 * Math.PI) / 180
 				let angleDeg = (i / c.vertexCount) * 360
 				// console.log(pn.noise(angleDeg, yOffset, 0), Math.cos(angleRad))
-				// i === c.vertexCount && console.log("its equal wooh")
 				let x =
 					Math.cos(angleRad) *
 					c.size.value *
@@ -103,49 +102,6 @@ function setup() {
 				points.push({ x, y })
 			}
 		}
-
-		// const getSquare = () => {
-		// 	let topHor = []
-		// 	let bottomHor = []
-		// 	let leftVert = []
-		//     let rightVert = []
-		// 	for (
-		// 		let index = 0;
-		// 		index < s.size.width / s.vertexCount;
-		// 		index += s.vertexCount
-		// 	) {
-		// 		let yTop = map(
-		// 			pn.noise(index, yOffset),
-		// 			0,
-		// 			1,
-		// 			1 - s.size.variation,
-		// 			1 + s.size.variation
-		// 		)
-		// 		let xTop =
-		// 			index + s.vertexCount > s.size.width / s.vertexCount
-		// 				? s.size.width
-		// 				: index
-		// 		let yBot =
-		// 			s.size.height +
-		// 			map(
-		// 				pn.noise(index, yOffset),
-		// 				0,
-		// 				1,
-		// 				1 - s.size.variation,
-		// 				1 + s.size.variation
-		// 			)
-		// 		let xBot =
-		// 			index + s.vertexCount > s.size.width / s.vertexCount
-		// 				? s.size.width
-		// 				: index
-		// 		topHor.push({ x: xTop, y: yTop })
-		// 		bottomHor.push({ x: xBot, y: yBot })
-		//     }
-
-		//     for (let index = 0; index < s.size.height / s.vertexCount; index++) {
-
-		//     }
-		// }
 
 		getCircle()
 
