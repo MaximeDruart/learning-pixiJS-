@@ -16,18 +16,24 @@ document.body.appendChild(app.view)
 
 let yOffset = 0
 const c = {
-	noiseStrength: 0.13,
-	vertexCount: 23,
+	noiseStrength: 0.15,
+	vertexCount: 45,
 	yOffsetIncrement: 0.01,
 	size: {
 		value: 230,
 		baseValue: 230,
-		variation: 30
-	},
-	stroke: {
-		size: 15,
-		baseSize: 15,
-		variation: 8
+		variation: 15
+	}
+}
+
+const s = {
+	noiseStrength: 0.1,
+	vertexCount: 60,
+	yOffsetIncrement: 0.01,
+	size: {
+		w: 230,
+		h: 230,
+		variation: 15
 	}
 }
 
@@ -58,59 +64,119 @@ function setup() {
 	app.ticker.speed = 0.1
 	app.ticker.add(() => {
 		yOffset += c.yOffsetIncrement
-		c.stroke.size += pn.noise(yOffset, 0, 0) * 2 - 1
-		c.stroke.size = _.clamp(
-			c.stroke.size,
-			c.stroke.baseSize - c.stroke.variation,
-			c.stroke.baseSize + c.stroke.variation
-		)
-		c.size.value += pn.noise(0, 0, yOffset) * 2 - 1
+		c.size.value += pn.noise(0, 0, yOffset) / 2 - 0.25
 		c.size.value = _.clamp(
 			c.size.value,
 			c.size.baseValue - c.size.variation,
 			c.size.baseValue + c.size.variation
 		)
 
-		mask.clear()
-		mask.lineStyle(1, 0)
-		mask.beginFill(0x8bc5ff, 0.4)
-		let previousValue = [0, 0]
-		let firstValue = [0, 0]
-		for (let i = 0; i < c.vertexCount; i++) {
-			let angle = ((i / c.vertexCount) * 360 * Math.PI) / 180
-			let xValue =
-				Math.cos(angle) *
-				c.size.value *
-				map(
-					pn.noise(angle, yOffset, 0),
-					0,
-					1,
-					1 - c.noiseStrength,
-					1 + c.noiseStrength
-				)
-			let yValue =
-				Math.sin(angle) *
-				c.size.value *
-				map(
-					pn.noise(angle, yOffset, 0),
-					0,
-					1,
-					1 - c.noiseStrength,
-					1 + c.noiseStrength
-				)
-			if (i === 0) {
-				mask.moveTo(xValue, yValue)
-				firstValue = [xValue, yValue]
+		let points = []
+		const getCircle = () => {
+			for (let i = 0; i < c.vertexCount; i++) {
+				let angleRad = ((i / c.vertexCount) * 360 * Math.PI) / 180
+				let angleDeg = (i / c.vertexCount) * 360
+				// console.log(pn.noise(angleDeg, yOffset, 0), Math.cos(angleRad))
+				// i === c.vertexCount && console.log("its equal wooh")
+				let x =
+					Math.cos(angleRad) *
+					c.size.value *
+					map(
+						pn.noise(angleDeg, yOffset, 0),
+						0,
+						1,
+						1 - c.noiseStrength,
+						1 + c.noiseStrength
+					)
+
+				let y =
+					Math.sin(angleRad) *
+					c.size.value *
+					map(
+						pn.noise(angleDeg, yOffset, 0),
+						0,
+						1,
+						1 - c.noiseStrength,
+						1 + c.noiseStrength
+					)
+
+				points.push({ x, y })
 			}
-			// mask.quadraticCurveTo(xValue * 1.6, yValue * 1.6, xValue, yValue)
-			mask.lineTo(xValue, yValue)
-			// mask.arcTo(previousValue[0], previousValue[1], xValue, yValue)
-			previousValue = [xValue, yValue]
 		}
-		// mask.lineTo(firstValue[0], firstValue[1])
+
+		// const getSquare = () => {
+		// 	let topHor = []
+		// 	let bottomHor = []
+		// 	let leftVert = []
+		//     let rightVert = []
+		// 	for (
+		// 		let index = 0;
+		// 		index < s.size.width / s.vertexCount;
+		// 		index += s.vertexCount
+		// 	) {
+		// 		let yTop = map(
+		// 			pn.noise(index, yOffset),
+		// 			0,
+		// 			1,
+		// 			1 - s.size.variation,
+		// 			1 + s.size.variation
+		// 		)
+		// 		let xTop =
+		// 			index + s.vertexCount > s.size.width / s.vertexCount
+		// 				? s.size.width
+		// 				: index
+		// 		let yBot =
+		// 			s.size.height +
+		// 			map(
+		// 				pn.noise(index, yOffset),
+		// 				0,
+		// 				1,
+		// 				1 - s.size.variation,
+		// 				1 + s.size.variation
+		// 			)
+		// 		let xBot =
+		// 			index + s.vertexCount > s.size.width / s.vertexCount
+		// 				? s.size.width
+		// 				: index
+		// 		topHor.push({ x: xTop, y: yTop })
+		// 		bottomHor.push({ x: xBot, y: yBot })
+		//     }
+
+		//     for (let index = 0; index < s.size.height / s.vertexCount; index++) {
+
+		//     }
+		// }
+
+		getCircle()
+
+		mask.clear()
+		mask.beginFill(0)
+
+		// https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
+
+		mask.moveTo(points[0].x, points[0].y)
+
+		for (let i = 1; i <= points.length - 2; i++) {
+			const xc = (points[i].x + points[i + 1].x) / 2
+			const yc = (points[i].y + points[i + 1].y) / 2
+			mask.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
+		}
+		// curve through the last two points
+		let xc = (points[points.length - 1].x + points[0].x) / 2
+		let yc = (points[points.length - 1].y + points[0].y) / 2
+		mask.quadraticCurveTo(
+			points[points.length - 1].x,
+			points[points.length - 1].y,
+			xc,
+			yc
+		)
+		xc = (points[0].x + points[1].x) / 2
+		yc = (points[0].y + points[1].y) / 2
+		mask.quadraticCurveTo(points[0].x, points[0].y, xc, yc)
+
 		mask.closePath()
 		mask.endFill()
-		// bg.mask = mask
+		bg.mask = mask
 	})
 
 	app.renderer.render(app.stage)
