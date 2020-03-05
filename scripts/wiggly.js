@@ -6,7 +6,7 @@ let Application = PIXI.Application,
 
 const app = new Application({
 	width: window.innerWidth,
-	height: window.innerHeight * 2,
+	height: window.innerHeight,
 	antialias: true,
 	//   transparent: true,
 	backgroundColor: 0x131313,
@@ -14,7 +14,7 @@ const app = new Application({
 })
 
 document.body.appendChild(app.view)
-loader.add("./images/img.jpg").load(setup)
+loader.add("./images/coiny.jpg").load(setup)
 
 const map = (n, start1, stop1, start2, stop2) => ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2
 const constrain = (n, low, high) => Math.max(Math.min(n, high), low)
@@ -34,8 +34,8 @@ const c = {
 }
 
 function setup() {
-	bg = new Sprite(resources["./images/img.jpg"].texture)
-	bg.scale.set(1.1, 1.1)
+	bg = new Sprite(resources["./images/coiny.jpg"].texture)
+	bg.scale.set(1, 1)
 	bg.anchor.set(0.5, 0.5)
 	bg.x = window.innerWidth / 2
 	bg.y = window.innerHeight / 2
